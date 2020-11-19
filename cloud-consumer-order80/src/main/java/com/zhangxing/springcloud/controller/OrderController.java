@@ -1,8 +1,11 @@
 package com.zhangxing.springcloud.controller;
 
+import com.zhangxing.myRule.MySelfRule;
 import com.zhangxing.springcloud.entity.CommonResult;
 import com.zhangxing.springcloud.entity.Payment;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.netflix.ribbon.RibbonClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +20,7 @@ import javax.annotation.Resource;
  */
 @RestController
 @Slf4j
+@RibbonClient(name = "CLOUD-PAYMENT-SERVICE",configuration = MySelfRule.class)
 public class OrderController {
 
     //单机
@@ -31,14 +35,23 @@ public class OrderController {
 
     @GetMapping("/consumer/payment/create")
     public CommonResult<Payment> create(Payment payment) {
-        log.info("\n消费者：\n");
         return restTemplate.postForObject(PAYMENT_URL + "/payment/create", payment, CommonResult.class);
     }
 
     @GetMapping("/consumer/payment/get/{id}")
     public CommonResult<Payment> getPaymentById(@PathVariable("id") Long id) {
-        log.info("\n消费者：\n");
         return restTemplate.getForObject(PAYMENT_URL + "/payment/get/" + id, CommonResult.class);
+    }
+
+    @GetMapping("/consumer/payment/getForEntity/{id}")
+    public CommonResult<Payment> getPayment2(@PathVariable("id") Long id) {
+        ResponseEntity<CommonResult> entity = restTemplate.
+                getForEntity(PAYMENT_URL + "/payment/get/" + id, CommonResult.class);
+        if (entity.getStatusCode().is2xxSuccessful()) {
+            return entity.getBody();
+        } else {
+            return new CommonResult<>(404, "操作失败");
+        }
     }
 
 }
