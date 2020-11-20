@@ -1,5 +1,6 @@
 package com.zhangxing.springcloud.controller;
 
+import cn.hutool.core.lang.UUID;
 import com.zhangxing.springcloud.entity.CommonResult;
 import com.zhangxing.springcloud.entity.Payment;
 import com.zhangxing.springcloud.service.PaymentService;
@@ -30,6 +31,16 @@ public class PaymentController {
 
     @Resource
     private DiscoveryClient discoveryClient;
+
+    @GetMapping(value = "/payment/get/filter")
+    public String testFilter() {
+        return serverPort;
+    }
+
+    @GetMapping(value = "/payment/get/easy/{id}")
+    public String getEasy(@PathVariable("id") Long id) {
+        return "测试网关：8001" + serverPort + "\t" + id;
+    }
 
     @PostMapping(value = "/payment/create")
     public CommonResult create(@RequestBody Payment payment) {

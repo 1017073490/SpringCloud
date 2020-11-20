@@ -24,6 +24,16 @@ public class PaymentController {
     @Value("${server.port}")
     private String serverPort;
 
+    @GetMapping(value = "/payment/get/filter")
+    public String testFilter() {
+        return serverPort;
+    }
+
+    @GetMapping(value = "/payment/get/easy/{id}")
+    public String getEasy(@PathVariable("id") Long id) {
+        return "测试网关：8002" + serverPort + "\t" + id;
+    }
+
     @PostMapping(value = "/payment/create")
     public CommonResult create(@RequestBody Payment payment) {
         int result = paymentService.create(payment);
